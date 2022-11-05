@@ -3,17 +3,35 @@ const router = express.Router();
 const axios = require('axios');
 const registry = require('./registry.json')
 const fs = require('fs');
+const loadbalancer = require('../util/loadbalancer');
 
 router.all('/:apiName/:path', async (req, res) => {
     // tengo que confirmar que el servicio esté activo con la base de datos y mandar un error si no lo está
-    if (registry.services[req.params.apiName]) {
-        const response = await axios({
-            method: req.method,
-            url: `${registry.services[req.params.apiName].url}/${req.params.path}`,
-            headers: req.headers,
-            data: req.body
-        });
-        res.send(response.data);
+    const service = registry.services[req.params.apiName];
+    if (service) {
+        if (!service.loadBalancerStrategy) {
+            service.loadBalancerStrategy = 'ROUND_ROBIN';
+            fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
+                if (err) {
+                    console.log(err);
+                    res.send("Couldn't write load balancer strategy to registry");
+                }
+            });
+        }
+        const newIndex = loadbalancer[service.loadBalancerStrategy](service);
+        const url = service.instances[newIndex].url;
+        try {
+            const response = await axios({
+                method: req.method,
+                url: `${url}/${req.params.path}`,
+                headers: req.headers,
+                data: req.body
+            });
+            res.send(response.data);
+        } catch (err) {
+            console.log(err);
+        }
+
     } else {
         res.send('Service not found');
     }
@@ -25,7 +43,7 @@ router.post('/register', (req, res) => {
     if (apiAlreadyRegistered(registrationInfo)) {
         res.send('Service already registered');
     } else {
-        registry.services[req.body.apiName].push({ ...req.body });
+        registry.services[req.body.apiName].instances.push({ ...req.body });
         fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
             if (err) {
                 console.log(err);
@@ -40,8 +58,8 @@ router.post('/unregister', (req, res) => {
     const registrationInfo = req.body;
 
     if (apiAlreadyRegistered(registrationInfo)) {
-        const index = registry.services[registrationInfo.apiName].findIndex(service => service.url === registrationInfo.url);
-        registry.services[registrationInfo.apiName].splice(index, 1);
+        const index = registry.services[registrationInfo.apiName].instances.findIndex(service => service.url === registrationInfo.url);
+        registry.services[registrationInfo.apiName].instances.splice(index, 1);
         fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
             if (err) {
                 console.log(err);
@@ -57,7 +75,7 @@ router.post('/unregister', (req, res) => {
 
 
 function apiAlreadyRegistered(registrationInfo) {
-    return registry.services[registrationInfo.apiName].find(service => service.url === registrationInfo.url);
+    return registry.services[registrationInfo.apiName].instances.find(service => service.url === registrationInfo.url);
 }
 
 module.exports = router;
