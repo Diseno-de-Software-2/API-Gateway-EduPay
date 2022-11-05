@@ -22,16 +22,42 @@ router.all('/:apiName/:path', async (req, res) => {
 router.post('/register', (req, res) => {
     const registrationInfo = req.body;
     registrationInfo.url = registrationInfo.protocol + '://' + registrationInfo.host + ':' + registrationInfo.port;
-
-    registry.services[req.body.apiName] = { ...req.body };
-    fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
-        if (err) {
-            console.log(err);
-            res.send('Error registering service');
-        }
-    });
-    res.send('Service registered');
+    if (apiAlreadyRegistered(registrationInfo)) {
+        res.send('Service already registered');
+    } else {
+        registry.services[req.body.apiName].push({ ...req.body });
+        fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
+            if (err) {
+                console.log(err);
+                res.send('Error registering service');
+            }
+        });
+        res.send('Service registered');
+    }
 });
 
+router.post('/unregister', (req, res) => {
+    const registrationInfo = req.body;
+
+    if (apiAlreadyRegistered(registrationInfo)) {
+        const index = registry.services[registrationInfo.apiName].findIndex(service => service.url === registrationInfo.url);
+        registry.services[registrationInfo.apiName].splice(index, 1);
+        fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
+            if (err) {
+                console.log(err);
+                res.send('Error unregistering service');
+            } else {
+                res.send('Service unregistered');
+            }
+        });
+    } else {
+        res.send('Service not registered');
+    }
+});
+
+
+function apiAlreadyRegistered(registrationInfo) {
+    return registry.services[registrationInfo.apiName].find(service => service.url === registrationInfo.url);
+}
 
 module.exports = router;
