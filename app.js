@@ -7,6 +7,22 @@ const port = 3000 || process.env.PORT;
 app.use(express.json())
 app.use(helmet());
 
+// const auth = (req, res, next) => {
+
+//     const authString = Buffer.from(req.headers.authorization,'base64').toString('utf8');
+//     const authArray = authString.split(':');
+//     const username = authArray[0];
+//     const password = authArray[1];
+// // buscar si en la base de datos existe
+//     // if (null) {
+//     //     next();
+//     // } else {
+//     //     res.status(401).json({ message: 'Unauthorized' });
+//     // }
+// }
+
+// app.use(auth);
+
 app.use('/', routes)
 
 app.listen(port, () => {
