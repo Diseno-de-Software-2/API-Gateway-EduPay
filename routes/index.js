@@ -5,6 +5,25 @@ const registry = require('./registry.json')
 const fs = require('fs');
 const loadbalancer = require('../util/loadbalancer');
 
+router.post('/switch/:apiName', (req, res, next) => {
+    const apiName = req.params.apiName;
+    const requestBody = req.body;
+    const instances = registry.services[apiName].instances;
+    const instance = instances.findIndex(service => service.url === requestBody.url);
+    if (instance === -1) {
+        return res.status(400).json({ message: 'Service not found' });
+    } else {
+        instances[instance].enabled = requestBody.enabled;
+        fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send('Service updated');
+            }
+        });
+    }
+});
+
 router.all('/:apiName/:path', async (req, res) => {
     // tengo que confirmar que el servicio esté activo con la base de datos y mandar un error si no lo está
     const service = registry.services[req.params.apiName];
