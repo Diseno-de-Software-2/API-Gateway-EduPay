@@ -4,6 +4,8 @@ const axios = require('axios');
 const registry = require('./registry.json')
 const fs = require('fs');
 const loadbalancer = require('../util/loadbalancer');
+const { response } = require('express');
+
 
 router.post('/switch/:apiName', (req, res, next) => {
     const apiName = req.params.apiName;
@@ -39,17 +41,16 @@ router.all('/:apiName/:path', async (req, res) => {
         }
         const newIndex = loadbalancer[service.loadBalancerStrategy](service);
         const url = service.instances[newIndex].url;
-        try {
-            const response = await axios({
-                method: req.method,
-                url: `${url}/${req.params.path}`,
-                headers: req.headers,
-                data: req.body
-            });
+        axios({
+            method: req.method,
+            url: `${url}/${req.params.path}`,
+            headers: req.headers,
+            data: req.body
+        }).then(response => {
             res.send(response.data);
-        } catch (err) {
-            console.log(err);
-        }
+        }).catch(err => {
+            res.status(err.response.status).send(err.response.data);
+        });
 
     } else {
         res.send('Service not found');
