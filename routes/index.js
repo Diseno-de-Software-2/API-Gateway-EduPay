@@ -39,6 +39,13 @@ router.all('/:apiName/:path', async (req, res) => {
                 }
             });
         }
+
+        // check if there are no active instances
+        const activeInstances = service.instances.filter(instance => instance.enabled);
+        if (activeInstances.length === 0) {
+            return res.status(500).json({ message: 'No active instances' });
+        }
+
         const newIndex = loadbalancer[service.loadBalancerStrategy](service);
         const url = service.instances[newIndex].url;
         axios({
