@@ -49,7 +49,11 @@ router.all('/:apiName/:path', async (req, res) => {
         }).then(response => {
             res.send(response.data);
         }).catch(err => {
-            res.status(err.response.status).send(err.response.data);
+            if (err.response) {
+                res.status(err.response.status).send(err.response.data);
+            } else {
+                res.status(500).send(err.message);
+            }
         });
 
     } else {
