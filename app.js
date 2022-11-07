@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const morgan = require('morgan');
 const routes = require('./routes');
+const jwt = require('jsonwebtoken');
 const port = 3000 || process.env.PORT;
 
 app.use(express.json())
@@ -11,21 +12,34 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors());
 
-// const auth = (req, res, next) => {
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
+    if (typeof bearerHeader !== 'undefined') {
+        jwt.verify(bearerHeader, 'secret', (err, authData) => {
+            if (err) {
+                res.sendStatus(403);
+            }
+            else {
+                next();
+            }
+        });
+    } else {
+        if (req.url === '/auth/login') {
+            next();
+        } else if (req.url.includes('/register')) {
+            next();
+        } else if (req.url.includes('/unregister')) {
+            next();
+        } else if (req.url.includes('/switch')) {
+            next();
+        } else {
+            console.log('No token provided ', req.url);
+            res.sendStatus(403);
+        }
+    }
+}
 
-//     const authString = Buffer.from(req.headers.authorization,'base64').toString('utf8');
-//     const authArray = authString.split(':');
-//     const username = authArray[0];
-//     const password = authArray[1];
-// // buscar si en la base de datos existe
-//     // if (null) {
-//     //     next();
-//     // } else {
-//     //     res.status(401).json({ message: 'Unauthorized' });
-//     // }
-// }
-
-// app.use(auth);
+app.use(verifyToken);
 
 app.use('/', routes)
 
