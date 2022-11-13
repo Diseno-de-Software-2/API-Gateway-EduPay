@@ -5,6 +5,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const routes = require('./routes');
 const jwt = require('jsonwebtoken');
+var setTerminalTitle = require('set-terminal-title');
+setTerminalTitle('API Gateway', { verbose: true });
 const port = 3000 || process.env.PORT;
 
 app.use(express.json())
