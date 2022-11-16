@@ -1,18 +1,18 @@
 # API GATEWAY EduPay
 
-This is the API Gateway for the EduPay project.
+Este es el API Gateway del proyecto EduPay.
 
-## How to run
+## Cómo ejecutar
 
-To run the API Gateway, you need to have installed [Node.js](https://nodejs.org/en/).
+Para ejecutar la pasarela de la API, es necesario tener instalado [Node.js](https://nodejs.org/en/).
 
-Then, you need to install the dependencies:
+A continuación, es necesario instalar las dependencias:
 
 ```bash
 npm install
 ```
 
-Finally, you can run the API Gateway:
+Por último, puede ejecutar el API Gateway:
 
 ```bash
 npm run dev
@@ -20,9 +20,9 @@ npm run dev
 
 ## Port
 
-The API Gateway will be running on port 3000.
+El API Gateway se ejecutará en el puerto 3000.
 
-## Registry json
+## Registro json
 
 En este json se registra la cantidad de instancias por servicios que se tienen activas y si estas están activas o inactivas
 
@@ -62,9 +62,9 @@ En este json se registra la cantidad de instancias por servicios que se tienen a
 
 ## Peticiones 
 
-### Open endpoints
+### Puntos finales abiertos
 
-No requieren token de autenticación
+No authentication token required
 
 ---
 ### Autenticación
@@ -72,7 +72,7 @@ No requieren token de autenticación
 
   _localhost:3000/auth/login_
  
-* **Notes:**
+* **Notas:**
 Redirige a al servicio de autenticación para comprobar el usuario y contraseña y asignarte un token.
 
 ---
@@ -87,7 +87,7 @@ Redirige a al servicio de autenticación para comprobar el usuario y contraseña
 
   `POST` 
 
-* **Data Params**
+* **Parámetros de datos**
 
 ```
         {
@@ -96,22 +96,22 @@ Redirige a al servicio de autenticación para comprobar el usuario y contraseña
         }
 ```
 
-* **Success Response:**
+* **Respuesta al éxito:**
   
   * **Code:** 200 <br />
     **Content:** `Service unregistered`
  
-* **Error Response:**
+* **Respuesta al error:**
 
   * **Code:** 
     **Content:** `Error unregistering service`
     
-  OR
+  O
   
   * **Code:** 
     **Content:** `Service not registered`
 
-* **Notes:**
+* **Notas:**
 Elimina un servicio en registry.json
 
 ---
@@ -122,11 +122,11 @@ Elimina un servicio en registry.json
 
  _localhost:3000/register_
 
-* **Method:**
+* **Método:**
 
   `POST` 
 
-* **Data Params**
+* **Parámetros de datos**
 
 ```
         {
@@ -137,17 +137,17 @@ Elimina un servicio en registry.json
         }
 ```
 
-* **Success Response:**
+* **Respuesta al éxito:**
   
   * **Code:** 200 <br />
     **Content:** `Service registered`
  
-* **Error Response:**
+* **Respuesta al error:**
 
   * **Code:** 
     **Content:** `Error registering service`
 
-* **Notes:**
+* **Notas:**
 Registra un servicio en registry.json
 
 ---
@@ -157,11 +157,11 @@ Registra un servicio en registry.json
 
  _localhost:3000/switch/:apiname_
 
-* **Method:**
+* **Método:**
 
   `GET` 
 
-* **Url Params**
+* **Parámetros de la url**
 
 ```
         {
@@ -170,7 +170,7 @@ Registra un servicio en registry.json
         }
 ```
 
-* **Success Response:**
+* **Respuesta al éxito:**
   
   * **Code:** 200 <br />
     **Content:** `Service updated`
@@ -180,11 +180,11 @@ Registra un servicio en registry.json
   * **Code:** 
     **Content:** `{err}`
 
-* **Notes:**
+* **Notas:**
  Activa o desactiva un servicio
  
 ---
 
 ### Endpoints
 
-Necesitan un campo authorization en el header que contenga el token dado por el servicio de autorización
+Necesitan un campo de autorización en la cabecera que contenga el token dado por el servicio de autorización.
