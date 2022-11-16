@@ -67,7 +67,7 @@ En este json se registra la cantidad de instancias por servicios que se tienen a
 No requieren token de autenticación
 
 ---
-
+### Autenticación
 * **URL**
 
   _localhost:3000/auth/login_
@@ -78,7 +78,7 @@ Redirige a al servicio de autenticación para comprobar el usuario y contraseña
 ---
 
 ---
-
+### Eliminar un servicio
 * **URL**
 
  _localhost:3000/unregister_
@@ -117,7 +117,7 @@ Elimina un servicio en registry.json
 ---
 
 ---
-
+### Añade un servicio
 * **URL**
 
  _localhost:3000/register_
@@ -152,7 +152,7 @@ Registra un servicio en registry.json
 
 ---
 ---
-
+### Activa o desactiva un servicio
 * **URL**
 
  _localhost:3000/switch/:apiname_
