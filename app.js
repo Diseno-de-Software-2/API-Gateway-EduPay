@@ -5,6 +5,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 const routes = require('./routes');
 const jwt = require('jsonwebtoken');
+const registry = require('./routes/registry.json');
+const fs = require('fs');
 var setTerminalTitle = require('set-terminal-title');
 setTerminalTitle('API Gateway', { verbose: true });
 const port = 3000 || process.env.PORT;
@@ -46,8 +48,16 @@ app.use(verifyToken);
 app.use('/', routes)
 
 app.listen(port, () => {
+    deleteInstances();
     console.log(`App listening at port ${port}`)
 });
+
+const deleteInstances = () => {
+    for (const service in registry.services) {
+        registry.services[service].instances = [];
+    }
+    fs.writeFileSync('./routes/registry.json', JSON.stringify(registry));
+}
 
 
 
