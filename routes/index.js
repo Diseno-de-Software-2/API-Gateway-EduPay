@@ -39,11 +39,32 @@ router.all('/:apiName/:path', async (req, res) => {
                 }
             });
         }
-
         // check if there are no active instances
         const activeInstances = service.instances.filter(instance => instance.enabled);
         if (activeInstances.length === 0) {
-            return res.status(500).json({ message: 'No active instances' });
+            var serv = ''
+            console.log('Entra aqui')
+            switch (service.instances[0].apiName) {
+                case 'balance':
+                    serv = 'Consulta de saldo'
+                    break;
+                case 'query':
+                    serv = 'Consultas'
+                    break;
+                case 'pay':
+                    serv = 'Pago de servicios'
+                    break;
+                case 'auth':
+                    serv = 'Autenticación'
+                    break;
+                case 'account':
+                    serv = 'Modificación de Cuentas'
+                    break;
+                default:
+                    serv = 'Servicio'
+                    break;
+            }
+            return res.status(503).json({ message: 'no se encontraron instancias activas del servicio', service: serv });
         }
 
         const newIndex = loadbalancer[service.loadBalancerStrategy](service);
