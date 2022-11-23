@@ -44,7 +44,7 @@ router.all('/:apiName/:path', async (req, res) => {
         if (activeInstances.length === 0) {
             var serv = ''
             console.log('Entra aqui')
-            switch (service.apiName.instances[0]) {
+            switch (service.instances[0].apiName) {
                 case 'balance':
                     serv = 'Consulta de saldo'
                     break;
