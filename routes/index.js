@@ -60,6 +60,14 @@ router.all('/:apiName/:path', async (req, res) => {
                 res.status(err.response.status).send(err.response.data);
             } else {
                 res.status(500).send(err.message);
+                // put the instance in the registry as inactive
+                const instance = service.instances.findIndex(service => service.url === url);
+                service.instances[instance].enabled = false;
+                fs.writeFile('./routes/registry.json', JSON.stringify(registry), (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
             }
         });
 
